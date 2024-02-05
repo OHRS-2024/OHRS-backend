@@ -1,0 +1,42 @@
+    <nav class="nav-bar">
+        <h1>Home</h1>
+        <ul class="nav-options">
+            <%- include('links/welcome') %>
+            <%- include('links/register') %>
+            <%- include('links/login') %>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="userForm" id="userRegisterForm">            
+            <h1 class="title" id="titleRegister">REGISTER</h1>
+
+            <% if(message !== null){%>
+                <div class="return-message visible"> 
+                    <%= message %> 
+                    <a href="/auth/login" >Goto login</a>
+                </div>
+            <% } %>
+
+            <form class="form" method="post" action="/auth/register">
+                <input type="text" name="firstName" class="userInput" placeholder="First name" required>
+                <input type="text" name="lastName" class="userInput" placeholder="Last name" required>
+
+                <label >Gender</label>
+                <label >Male</label>
+                <input type="radio" value="male" name="gender" class="userInputRadio" required>
+                <label >Female</label>
+                <input type="radio" value="female" name="gender" class="userInputRadio" required>
+
+                <input type="email" name="email" class="userInput" placeholder="Email@example.com" required>
+                <input type="password" name="password" class="userInput" placeholder="Password" required>
+                <input type="password" name="passwordRepeat" class="userInput" placeholder="Reenter your password" required>
+                <div class="btn-holder">
+                    <Button class="inputBtn" type="submit">Register</Button>
+                    <Button class="inputBtn" type="reset">Cancel</Button>
+                </div>
+                <p>already have an account? </p><a href="/auth/login" >Login</a>
+            </form>
+        </div>
+    </div>
+    <script src="/main.js"></script>

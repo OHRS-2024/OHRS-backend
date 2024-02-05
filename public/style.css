@@ -1,0 +1,122 @@
+:root{
+    font-size: 62.7%;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-size: 1.6rem;
+    background: #FFFFFF;
+    color: #777777;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title{
+    display: block;
+    text-align: center;
+    margin: 2.5rem auto;
+    color: #6666FF;
+}
+
+.nav-bar{
+    height: 8rem;
+    display: flex;
+    justify-content: space-between;
+    padding: 0rem 1rem;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    right: 0;
+    left: 0;
+    border: rgba(0, 0, 0, 0.2) solid 0.2rem;   
+    background: #FFFFFF;
+}
+
+.nav-bar h1{
+    color: #6666FF;
+}
+
+.nav-bar ul{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3rem;
+    list-style: none;
+}
+
+.nav-bar ul li a{
+    text-decoration: none;
+    font-weight: bold;
+    color: #000000;
+}
+
+.nav-bar ul li a:hover{
+    color: #ff3b3b;
+}
+
+.userForm{
+    padding: 1rem 4rem;
+    background: #FFFFFF;
+    width: 55vw;
+    margin: 3rem auto;
+    border: rgba(0, 0, 0, 0.2) solid 0.2rem;
+}
+
+.userInput{
+    display: block;
+    padding: 2rem;
+    width: 100%;
+    margin: 2rem auto;
+    outline: none;
+    border: none;
+    font-size: 1.7rem;
+    border: rgba(0, 0, 0, 0.2) solid 0.2rem;
+}
+
+.btn-holder{
+    display: flex;
+    gap: 1rem;
+}
+
+.inputBtn{
+    padding: 3rem;
+    width: 50%;
+    font-weight: bold;
+    border: none;
+    color: #FFF;
+    font-size: 1.7rem;
+    background: #6666FF;
+    cursor: pointer;
+}
+
+.inputBtn:hover{
+    background: #9999ff;
+    transition: 0.3s ease-in-out;
+}
+
+a, p{
+    display: inline-block;
+    margin: 5rem 0.3rem;
+}
+
+.return-message{
+    margin: auto;
+    background: #ffffff;
+    margin-top: 5rem;
+    color: #ff3b3b;
+    font-weight: bold;
+    text-align: center;
+    padding: 5rem 2rem;
+    border-radius: 1rem;
+    border: rgba(0, 0, 0, 0.2) solid 0.2rem;
+    max-width: 35vw;
+    display: none;
+}
+
+.visible{
+    display: block;
+}
