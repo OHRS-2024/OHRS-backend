@@ -1,7 +1,6 @@
 const {createUser} = require('../dao/dao');
 const checkRegInfo = require('./regController');
 const { emailExists } = require('../dao/dao');
-
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
@@ -12,17 +11,18 @@ const createWebToken = (id) =>{
 const register_post = async (req, res) => {
     try {
         const { firstName, lastName, email, gender, password, passwordRepeat } = req.body;
+        console.log(firstName, lastName, email, gender, password, passwordRepeat);
         const regErrs = await checkRegInfo({ firstName, lastName, password, passwordRepeat });
-
-        try {
+        
+            try {
             const emailExistsResult = await emailExists(email);
-            regErrs[2] = emailExistsResult ? 1 : 0;
-        } catch (error) {
+            regErrs[2] = emailExistsResult ? 0 : 1;
+            } catch (error) {
             console.error("Error checking if email exists:", error);
-            regErrs[2] = 1;
-        }
+            regErrs[2] = 0;
+            }
 
-        if (!regErrs.some(e => e === 1)) {
+        if (!regErrs.some(e => e === 0)) {
             
             const uid = crypto.randomUUID();
             const fullName = `${firstName} ${lastName}`;
@@ -36,32 +36,47 @@ const register_post = async (req, res) => {
                     maxAge: (1000 * 60 * 60 * 24 * 30),
                     httpOnly: true
                 });
-                res.status(200).json({ 
-                    response : regErrs,
-                    error : null });
+                res.status(200).json({
+                    result: { 
+                        error : false,
+                        response: regErrs,
+                        message : 'Registration successful!'
+                     }
+                });
             } else {
-                res.status(500).json({ 
-                    response : regErrs,
-                    error: 'Failed to create user!' });
+                res.status(500).json({
+                    'result': { 
+                        error : true,
+                        response: regErrs,
+                        message : 'Internal error please try agin later.'
+                     }
+                });
             }
         } else {
-            res.status(400).json({ 
-                response: regErrs,
-                error : 'Error from client!'
-             });
+            res.status(400).
+            json({
+                result: { 
+                    error : true,
+                    response: regErrs,
+                    message : 'Please provide the required information!'
+                 }
+            });
         }
     } catch (error) {
         console.error("Error in register_post:", error);
         res.status(500).json({ 
-            response : null,
-            error: 'Internal server error'});
+            result: { 
+                error : true,
+                response: null,
+                message : 'Internal error please try agin later.'
+             }
+        });
     }
 }
 
-
 const register_get = (req, res) =>{
     res.render('register', {
-        message : null
+        result : null
     });
     res.end();
 }

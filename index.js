@@ -18,7 +18,6 @@ app.set('views', __dirname+'/views');
 app.set('layout', './layouts/index');
 
 const logger = (req, res, next) =>{
-    // console.log(`${res.statusCode} ${req.method} ${req.path} FROM ${req.ip}`);
     const method = req.method;
     const path = req.path;
     const ip = req.ip;

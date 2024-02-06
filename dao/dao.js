@@ -24,7 +24,7 @@ async function emailExists(email){
         
         return rows.length > 0;
 
-    } catch (error) {w
+    } catch (error) {
         console.log(error);
     }
 }
