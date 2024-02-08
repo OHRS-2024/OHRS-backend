@@ -50,15 +50,14 @@ const showMessages = (data) =>{
     }else{
         form.reset();
         messageViews.forEach(v => v.textContent = '');
-        document.getElementById('registration-status').style.display = 'block';
+        document.getElementById('registration-status').style.visibility = 'visible';
         document.getElementById('registration-status').textContent = data.result.message;
         window.scrollY(0);
     }
 }
 
-
 const onReset = () =>{
-    document.getElementById('registration-status').style.display = 'block';
+    document.getElementById('registration-status').style.visibility = 'gone';
     messageViews.forEach((view) =>{
         view.textContent = '';
     });
