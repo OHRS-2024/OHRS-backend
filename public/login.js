@@ -14,8 +14,16 @@ form.addEventListener('submit', async (e)=> {
             headers : {"Content-Type": 'application/json'},
             method : 'POST'
             }).then(res => {
-                console.log(res.json());
-            }).catch(err => console.error(err)); 
+                return res.json();
+            }).then(data =>{
+                if (data.success) {
+                    location.href = data.redirectPage;
+                }else{
+                    console.log(data.message);
+                }
+            })
+            .catch(err => console.error(err)); 
+            
     } catch (error) {
         console.log(error); 
     }

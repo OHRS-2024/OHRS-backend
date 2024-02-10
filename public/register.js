@@ -21,7 +21,6 @@ form.addEventListener('submit', async (e)=> {
                 return res.json();
             }).then(data => {
                 showMessages(data);
-                // console.log(data);
             }).catch(err => console.error(err)); 
     } catch (error) {
         console.log(error); 
@@ -31,7 +30,7 @@ form.addEventListener('submit', async (e)=> {
 
 const showMessages = (data) =>{
 
-    const result = data.result.response;
+    const result = data.result.body;
 
     const messages = [
     "Only characters are allowed!",

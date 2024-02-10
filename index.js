@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const pages = require('./routes/pageRoute');
 const auth = require('./routes/authRoute');
-const {logger, checkLoggedIn} = require('./middlewares/authmw')
+const {logger, checkLoggedIn, checkAuthorized} = require('./middlewares/authmw')
 const app = express();
 const PORT = process.env.PORT;
 
@@ -19,9 +19,8 @@ app.set('layout', './layouts/index');
 
 app.use(logger);
 
-app.use('/auth', auth);
-app.use('/pages',pages);
-app.use('/', pages);
+app.use('/auth', checkLoggedIn, auth);
+app.use('/pages',checkAuthorized, pages);
 
 app.listen(PORT, () =>{
     console.log("SERVER RUNNIG AT PORT : " + PORT);

@@ -24,8 +24,9 @@ const register_post = async (req, res) => {
                     res.status(200).json({
                         result: { 
                             error : false,
-                            response: regErrs,
-                            message : 'Registration successful!'
+                            body: regErrs,
+                            message : 'Registration successful!',
+                            redirectPage : '/auth/login'
                          }
                     });
                 }   
@@ -34,8 +35,9 @@ const register_post = async (req, res) => {
                     res.status(500).json({
                         'result': { 
                             error : true,
-                            response: regErrs,
-                            message : 'Internal error please try agin later.'
+                            body: regErrs,
+                            message : 'Internal error please try agin later.',
+                            redirectPage : null
                          }
                     });
             }
@@ -44,8 +46,9 @@ const register_post = async (req, res) => {
             json({
                 result: { 
                     error : true,
-                    response: regErrs,
-                    message : 'Please provide the required information!'
+                    body: regErrs,
+                    message : 'Please provide the required information!',
+                    redirectPage : null
                  }
             });
         }
@@ -68,9 +71,7 @@ const checkRegInfo = async (userData) => {
 }
 
 const register_get = (req, res) =>{
-    res.render('register', {
-        result : null
-    });
+    res.render('register');
     res.end();
 }
 
