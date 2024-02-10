@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const pages = require('./routes/pageRoute');
 const auth = require('./routes/authRoute');
-const {logger} = require('./middlewares/authmw')
+const {logger, checkLoggedIn} = require('./middlewares/authmw')
 const app = express();
 const PORT = process.env.PORT;
 
@@ -18,6 +18,9 @@ app.set('views', __dirname+'/views');
 app.set('layout', './layouts/index');
 
 app.use(logger);
+
+app.use('/auth', auth);
+app.use('/pages',pages);
 app.use('/', pages);
 
 app.listen(PORT, () =>{

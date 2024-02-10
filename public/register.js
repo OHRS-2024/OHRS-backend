@@ -1,4 +1,5 @@
 const form = document.querySelector('form');
+const messageViews = document.querySelectorAll('form > p');
 
 form.addEventListener('submit', async (e)=> {
     e.preventDefault();
@@ -31,7 +32,6 @@ form.addEventListener('submit', async (e)=> {
 const showMessages = (data) =>{
 
     const result = data.result.response;
-    const messageViews = document.querySelectorAll('form > p');
 
     const messages = [
     "Only characters are allowed!",
@@ -46,13 +46,14 @@ const showMessages = (data) =>{
         })
         document.getElementById('registration-status').style.display = 'block';
         document.getElementById('registration-status').textContent = data.result.message;
-        window.scrollY(0);
+        
+        window.scrollTo(0,0);
     }else{
         form.reset();
         messageViews.forEach(v => v.textContent = '');
         document.getElementById('registration-status').style.visibility = 'visible';
         document.getElementById('registration-status').textContent = data.result.message;
-        window.scrollY(0);
+        window.scrollTo(0,0);
     }
 }
 

@@ -1,13 +1,5 @@
-const {createUser} = require('../dao/dao');
-const checkRegInfo = require('./regController');
-const { emailExists } = require('../dao/dao');
-
-const jwt = require('jsonwebtoken');
+const {emailExists, createUser} = require('../dao/dao');
 const crypto = require('crypto');
-
-const createWebToken = (id) =>{
-    return jwt.sign(id, process.env.SECRET_KEY);
-}
 
 const register_post = async (req, res) => {
         
@@ -29,13 +21,6 @@ const register_post = async (req, res) => {
             try {
                 const result = await createUser(uid, fullName, email, gender, password);
                 if (result.affectedRows > 0) {
-                    const userToken = createWebToken(uid);
-                    
-                    res.cookie('userToken', userToken, {
-                        maxAge: (1000 * 60 * 60 * 24 * 30),
-                        httpOnly: true
-                    });
-    
                     res.status(200).json({
                         result: { 
                             error : false,
@@ -66,6 +51,22 @@ const register_post = async (req, res) => {
         }
 }
 
+const checkRegInfo = async (userData) => {
+    const { firstName, lastName, email, password, passwordRepeat } = userData;
+
+        const inputErrors = [0, 0, 0, 0, 0];
+
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const passRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()])(?=.*\d).{6,}$/;
+    
+        inputErrors[0] = nameRegex.test(firstName) ? 1 : 0;
+        inputErrors[1] = nameRegex.test(lastName) ? 1 : 0;
+        inputErrors[3] = passRegex.test(password) ? 1 : 0;
+        inputErrors[4] = passwordRepeat === password ? 1 : 0;
+    
+        return inputErrors;    
+}
+
 const register_get = (req, res) =>{
     res.render('register', {
         result : null
@@ -73,30 +74,7 @@ const register_get = (req, res) =>{
     res.end();
 }
 
-const login_post = (req, res) =>{
-    res.render('login');
-    res.end();
-}
-
-const login_get = (req, res) =>{
-
-    if (req.cookies !== null) {
-        jwt.verify(req.cookies.webToken, process.env.SECRET_KEY, (err, decoded) => {
-            if (err) {
-                console.log("Failed to decode token : "+ err);
-            } else {
-                res.send(decoded);
-            }
-          });
-    }
-    res.end();
-}
-
-
-
 module.exports = {
     register_post,
     register_get,
-    login_get,
-    login_post,
 }

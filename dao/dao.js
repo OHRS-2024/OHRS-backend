@@ -30,20 +30,34 @@ const emailExists = async (email) =>{
     }
 }
 
-const checkUser = async (email, password) =>{
+const findUserWithId = async (uuid) =>{
   const connection = await pool.getConnection();
   try {
-      const [rows] = await connection.execute('SELECT auth_string FROM users WHERE email = ?', [email]);
+      const [rows] = await connection.execute('SELECT * FROM users WHERE id = ?', [uuid]);
       connection.release();
       
-      return rows.length > 0;
+      return rows;
   } catch (error) {
       throw error;
   }
 }
 
+const getUser = async (email) =>{
+
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.execute('SELECT * FROM users WHERE email = ?', [email]);
+        connection.release();
+
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
-  checkUser,
+    findUserWithId,
   emailExists,
   createUser,
+  getUser,
 };

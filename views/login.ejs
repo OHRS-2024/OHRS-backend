@@ -1,9 +1,9 @@
     <nav class="nav-bar">
         <h1>Home</h1>
         <ul class="nav-options">
-            <%- include('links/welcome') %>
-            <%- include('links/register') %>
-            <%- include('links/login') %>
+            <li><a href="/">Welcome</a></li>
+            <li><a href="/auth/register">Register</a></li>
+            <li><a href="/auth/login">Login</a></li>
         </ul>
     </nav>
 
@@ -12,15 +12,11 @@
 
             <h1 class="title" id="titleLogin">LOGIN</h1>
 
-                <% if(message !== null){%>
-                    <div class="return-message visible"> 
-                        <%= message %> 
-                    </div>
-                <% } %>
-
-            <form class="form" action="/signIn" method="post">
-                <input type="email" name="username" class="userInput" placeholder="Email@example.com" required>
+            <form class="form">
+                <input type="email" name="email" class="userInput" placeholder="Email@example.com" required>
+                <p class="return-message"></p>
                 <input type="password" name="password" class="userInput" placeholder="Ppassword" required>
+                <p class="return-message"></p>
                 <div class="btn-holder">
                     <Button class="inputBtn" type="submit">Login</Button>
                     <Button class="inputBtn" type="reset">Cancel</Button>
@@ -29,3 +25,4 @@
             </form>
         </div>
     </div>
+    <script src="/login.js"></script>

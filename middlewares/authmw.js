@@ -8,8 +8,16 @@ const logger = (req, res, next) =>{
     next();
 }
 
+const checkLoggedIn = (req, res, next) =>{
 
+    if (req.cookies && req.cookies.userToken) {
+        next();
+    }else{
+        res.redirect('/auth/login');
+    }
+}
 
 module.exports = {
     logger,
+    checkLoggedIn,
 }
