@@ -1,27 +1,31 @@
 const express = require('express');
-const ejsLayouts = require('express-ejs-layouts');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const pages = require('./routes/pageRoute');
-const auth = require('./routes/authRoute');
-const {logger, checkLoggedIn, checkAuthorized} = require('./middlewares/authmw')
+const rootRoute = require('./routes/rootRoute');
+const cors = require('cors');
+const {logger, checkLoggedIn} = require('./middlewares/auth/authmw')
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
+app.use(cors());
 app.use(cookieParser());
-app.use(ejsLayouts);
-app.set('view engine', 'ejs');
-app.set('views', __dirname+'/views');
-app.set('layout', './layouts/index');
-
 app.use(logger);
 
-app.use('/auth', checkLoggedIn, auth);
-app.use('/pages',checkAuthorized, pages);
+app.get('/',(req, res) =>{
+    res.status(200).json({
+        result:{
+            success : true,
+            message : 'Page loaded',
+            redirectPage : null,
+            error : false
+        }
+    })
+});
 
-app.listen(PORT, () =>{
-    console.log("SERVER RUNNIG AT PORT : " + PORT);
+app.use('/', rootRoute)
+app.listen(PORT, () =>{ 
+    console.log("SERVER RUNNIG AT PORT : " + PORT); 
 });

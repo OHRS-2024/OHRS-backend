@@ -1,4 +1,4 @@
-const {emailExists, createUser} = require('../dao/dao');
+const {emailExists, createUser} = require('../../dao/dao');
 const crypto = require('crypto');
 
 const register_post = async (req, res) => {
@@ -71,8 +71,14 @@ const checkRegInfo = async (userData) => {
 }
 
 const register_get = (req, res) =>{
-    res.render('register');
-    res.end();
+    res.status(200).json({
+        result:{
+            success : true,
+            message : 'Page loaded',
+            redirectPage : '/auth/register',
+            error : false
+        }
+    });
 }
 
 module.exports = {

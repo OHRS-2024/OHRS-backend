@@ -1,5 +1,5 @@
-const { findUserWithId } = require("../dao/dao");
-const jwt = require('jsonwebtoken');
+const { findUserWithId } = require("../../dao/dao");
+const { verifyToken } = require('../../utils/token');
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const logger = (req, res, next) =>{
@@ -10,7 +10,6 @@ const logger = (req, res, next) =>{
     console.log(`${method} ${res.statusCode || 404} ${path} ${ip}`);
     next();
 }
-
 
 const checkAuthorized = async (req, res, next) =>{
 
@@ -26,6 +25,7 @@ const checkAuthorized = async (req, res, next) =>{
 const checkLoggedIn = async (req, res, next) =>{
 
     if (req.cookies && req.cookies.userToken) {
+        console.log(req.cookies.userToken);
         const userAuthenticated = await verifyUser(req.cookies.userToken);
         userAuthenticated ? res.status(200).redirect('/pages/home') : next();
     }else{
@@ -35,7 +35,7 @@ const checkLoggedIn = async (req, res, next) =>{
 
 const verifyUser = async (userToken) =>{
     try {
-        const decoded = verifyToken(userToken, SECRET_KEY);
+        const decoded = verifyToken(userToken, SECRET_KEY123);
         const [row] = await findUserWithId(decoded);
         if (row) {
             return true;
@@ -45,19 +45,6 @@ const verifyUser = async (userToken) =>{
     } catch (err) {
         console.error(err);
     }
-}
-
-
-const verifyToken = (token, key) => {
-    let decoded = ""
-    jwt.verify(token, key , (err, dec) =>{
-        if (err && !dec) {
-            throw err;
-        }else{
-            decoded = dec;        
-        }
-    });
-    return decoded;
 }
 
 module.exports = {
