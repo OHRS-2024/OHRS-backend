@@ -1,7 +1,7 @@
 const SECRET_KEY = process.env.SECRET_KEY;
-const { findUserWithId, getUser } = require('../../dao/dao');
 const bcrypt = require('bcrypt');
-const { createWebToken } = require('../../utils/token');
+const { getUser, setRefreshToken, getRefreshToken } = require('../../dao/userDao');
+const {createRefreshToken, createAccesToken} = require('./token');
 
 
 const login_post = async (req, res) =>{
@@ -9,10 +9,9 @@ const login_post = async (req, res) =>{
         if (email && password) {
             try {
                 const [userData] = await getUser(email); 
-                if (userData) {
-                    handleLogin(userData,password,res)
-                }else{
-                    res.status(400).json({
+
+                userData ? handleLogin(userData,password,res) :
+                    res.status(409).json({
                         result:{ 
                             success : false,
                             message: "User not found!",
@@ -20,7 +19,7 @@ const login_post = async (req, res) =>{
                             error : true
                         }
                     });
-                }                    
+
             } catch (error) {
                 res.status(500).json({
                     result: { 
@@ -44,23 +43,25 @@ const login_post = async (req, res) =>{
 
 const handleLogin = async (userData, password, res) =>{
     try {
-        const {auth_string, id} = userData;
+        const {auth_string, id, email} = userData;
         const isValid = await bcrypt.compare(password, auth_string);
         if (isValid) {
 
-            const userToken = createWebToken(id);
-            const cookie = {
-                name : "userToken",
-                value:  userToken,
-                maxAge: (1000 * 60 * 60 * 24 * 30)
-            }
+            const accessToken = createAccesToken(id);
+            const refreshToken = createRefreshToken(email);
+            setRefreshToken(id,refreshToken);
+
+            res.cookie("refreshToken",
+            refreshToken,{ httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+
+            res.cookie("accessToken",
+            accessToken,{ httpOnly: true, secure: true, sameSite: 'None', maxAge: 20 * 1000 });
 
             res.status(200).json({
                 result:{
                     success : true,
                     message : 'Login success',
                     redirectPage : '/pages/home',
-                    cookie : cookie,
                     error : null
                 }
             });

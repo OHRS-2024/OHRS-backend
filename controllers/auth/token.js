@@ -1,8 +1,17 @@
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const createWebToken = (id) =>{
-    return jwt.sign(id, SECRET_KEY);
+const createAccesToken = (id, userRole) =>{
+    return jwt.sign(
+    {
+        'userID' : id,
+        'userRole' : userRole
+    }
+    , SECRET_KEY);
+}
+
+const createRefreshToken = (id) =>{
+    return jwt.sign(id, REFRESH_SECRET_KEY);
 }
 
 const verifyToken = (token, key) => {
@@ -19,6 +28,7 @@ const verifyToken = (token, key) => {
 
 
 module.exports = {
-    createWebToken,
+    createRefreshToken,
+    createAccesToken,
     verifyToken
 }

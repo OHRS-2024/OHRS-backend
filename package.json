@@ -10,6 +10,7 @@
     "express-ejs-layouts": "^2.5.1",
     "http-proxy-middleware": "^2.0.6",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.9.1"
+    "mysql2": "^3.9.1",
+    "uuid": "^9.0.1"
   }
 }

@@ -19,6 +19,7 @@ const checkAuthorized = async (req, res, next) =>{
     }else{
         res.status(401).redirect('/auth/login');
     }
+    
 }
 
 
@@ -35,7 +36,7 @@ const checkLoggedIn = async (req, res, next) =>{
 
 const verifyUser = async (userToken) =>{
     try {
-        const decoded = verifyToken(userToken, SECRET_KEY123);
+        const decoded = verifyToken(userToken, SECRET_KEY);
         const [row] = await findUserWithId(decoded);
         if (row) {
             return true;
