@@ -1,4 +1,4 @@
-const allowedOrigins = require('../config/allowedOrigins');
+const allowedOrigins = require('../../config/allowedOrigins');
 
 const credentials = (req, res, next) => {
     
@@ -9,4 +9,4 @@ const credentials = (req, res, next) => {
     next();
 }
 
-module.exports = credentials
+module.exports = credentials;

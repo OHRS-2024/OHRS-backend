@@ -1,4 +1,6 @@
-const { findUserWithId, resetRefreshToken } = require('../../../dao/userDao');
+const dotenv = require('dotenv');
+dotenv.config({path:'../../.env'});
+const { findUserWithId, resetRefreshToken } = require('../../dao/userDao');
 
 const handleLogout = async (req, res) => {
     // On client, also delete the accessToken

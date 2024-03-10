@@ -1,4 +1,4 @@
-const { findUserWithId } = require("../../dao/dao");
+const { findUserWithId } = require("../../dao/userDao");
 const { verifyToken } = require('../../utils/token');
 const SECRET_KEY = process.env.SECRET_KEY;
 

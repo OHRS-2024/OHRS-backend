@@ -1,11 +1,10 @@
+require('dotenv').config();
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
 
 const createUser = async (uid,fullName,gender,email,phoneNumber, dateJoined) =>{
   try {
     const connection = await pool.getConnection();
-        // const salt = await bcrypt.genSalt(8);
-        // password = await bcrypt.hash(password, salt);
         const [result] = await connection.
         execute('INSERT INTO users(user_id, full_name ,gender, email ,phone_number ,date_joined) VALUES(?, ?, ?, ?, ?, ?);',
         [uid,fullName,gender,email,phoneNumber, dateJoined]);
@@ -35,7 +34,7 @@ const findUserWithId = async (uuid) =>{
       const [rows] = await connection.execute('SELECT * FROM users WHERE id = ?', [uuid]);
       connection.release();
       
-      return rows;
+      return rows[0];
   } catch (error) {
       throw error;
   }
@@ -47,7 +46,7 @@ const getUser = async (email) =>{
     try {
         const [rows] = await connection.execute('SELECT * FROM users INNER JOIN user_auth ON users.user_id = user_auth.user_id WHERE email = ?', [email]);
         connection.release();
-        return rows;
+        return rows[0];
     } catch (err) {
         throw err;
     }
@@ -66,7 +65,6 @@ const updateUser = async (email, attrName, attrVal) =>{
     }
 }
 
-
 const deleteUser = async (email) =>{
     const connection = await pool.getConnection();
     try {
@@ -79,45 +77,46 @@ const deleteUser = async (email) =>{
     }
 }
 
-const setRefreshToken = async (id,refreshToken) =>{
+const setRefreshToken = async (tokenId,refreshToken) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('UPDATE users_auth SET refresh_token TO ? WHERE user_id = ?;', [refreshToken, id]);
+        const [rows] = await connection.execute('UPDATE users_auth SET refresh_token TO ? WHERE user_id = ?;', [refreshToken, tokenId]);
         connection.release();
 
-        return rows;
+        return rows[0];
     } catch (err) {
         throw err;
     }
 }
 
-const getRefreshToken = async (id) =>{
+const getRefreshToken = async (userId) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('SELECT * FROM refresh_tokens WHERE user_id = ?;', [id]);
+        const [rows] = await connection.execute('SELECT * FROM refresh_tokens WHERE user_id = ?;', [userId]);
         connection.release();
-        return rows;
+        return rows[0];
     } catch (err) {
         throw err;
     }
 }
 
 const getRefreshTokenByEmail = async (email) =>{
+
     const connection = await pool.getConnection();
     try {
-        const [userId] = await connection.execute('SELECT user_id FROM users WHERE email = ?;', [email]);
-        const [rows] = await connection.execute('SELECT * FROM users INNER JOIN user_auth ON users.user_id = user_auth.user_id WHERE user_id = ?',[userId[1]]);
+        const [[userId]] = await connection.execute('SELECT user_id FROM users WHERE email = ?;', [email]);
+        const [rows] = await connection.execute('SELECT * FROM users INNER JOIN user_auth ON users.user_id = user_auth.user_id WHERE user_auth.user_id = ?',[userId.user_id]);
         connection.release();
-        return rows;
+        return rows[0];
     } catch (err) {
         throw err;
     }
 }
 
-const deleteRefreshToken = async (id) =>{
+const deleteRefreshToken = async (tokenId) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('DELETE FROM refresh_tokens WHERE id = ?;', [id]);
+        const [rows] = await connection.execute('DELETE FROM refresh_tokens WHERE id = ?;', [tokenId]);
         connection.release();
         return rows;
     } catch (err) {
@@ -130,22 +129,22 @@ const checkRefreshToken = async (refreshToken) =>{
     try {
         const [rows] = await connection.execute('SELECT * FROM user_auth WHERE refresh_token = ?;', [refreshToken]);
         connection.release();
-        return rows;
+        return rows[0];
     } catch (err) {
         throw err;
     }
 }
 
-// const main = async () =>{
-//     // const user = await getRefreshToken('e40ebbb8-db7a-11ee-b66b-e09d31beeb68');
-//     // const user = await deleteRefreshToken(1);
-//     // const user = await getUser('thejoel@gmail.com');
-//     // const result = await createUser('eyuelid','Joel','male','0991109603','thejoel@gmail.com','03-08-2024 03:57:00');
-//     console.log(user);
-//     return;
-// }
-
-// main();
+const userExists = async (email) =>{
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.execute('SELECT * FROM users WHERE email = ?;', [email]);
+        connection.release();
+        return rows.length > 0;
+    } catch (err) {
+        throw err;
+    }
+}
 
 module.exports = {
     findUserWithId,
@@ -158,5 +157,6 @@ module.exports = {
     setRefreshToken,
     deleteRefreshToken,
     getRefreshTokenByEmail,
+    userExists,
     checkRefreshToken
 };

@@ -1,77 +1,96 @@
-const {emailExists, createUser} = require('../../dao/dao');
+const {userExists, createUser} = require('../../dao/userDao');
+const sendCodeToEmail = require('./Emailer');
 const crypto = require('crypto');
+const cache  = require('memory-cache');
 
-const register_post = async (req, res) => {
+let waiting = false;
+
+const createUser_post = async (req, res) => {
         
-        const { firstName, lastName, email, gender, password, passwordRepeat } = req.body;
-        const regErrs = await checkRegInfo({ firstName, lastName, password, passwordRepeat });
-        
-        try {
-            const emailExistsResult = await emailExists(email);
-            regErrs[2] = emailExistsResult ? 0 : 1;
-        } catch (error) {
-            console.error("Error checking if email exists:", error);
-            regErrs[2] = 0;
+    try{
+        if (!req?.body?.firstName ||
+            !req?.body?.lastName ||
+            !req?.body?.gender ||
+            !req?.body?.email ||
+            !req?.body?.phoneNumber) {
+            return sendErrorResponse(res, 400, 'Please provide the required information!','/auth/register');             
         }
 
-        if (!regErrs.some(e => e === 0)) {
-            
-            const uid = crypto.randomUUID();
-            const fullName = `${firstName} ${lastName}`;
-            try {
-                const result = await createUser(uid, fullName, email, gender, password);
-                if (result.affectedRows > 0) {
-                    res.status(200).json({
-                        result: { 
-                            error : false,
-                            body: regErrs,
-                            message : 'Registration successful!',
-                            redirectPage : '/auth/login'
-                         }
-                    });
-                }   
-            } catch (error) {
+        const { firstName, lastName, gender, email, phoneNumber } = req?.body;
+        const uid = crypto.randomUUID();
+        const dateJoined = new Date().toISOString();
+        const fullName = firstName +" "+ lastName;
+        const userAlreadyExists = await userExists(email);
 
-                    res.status(500).json({
-                        'result': { 
-                            error : true,
-                            body: regErrs,
-                            message : 'Internal error please try agin later.',
-                            redirectPage : null
-                         }
-                    });
-            }
-        } else {
-            res.status(400).
-            json({
-                result: { 
-                    error : true,
-                    body: regErrs,
-                    message : 'Please provide the required information!',
-                    redirectPage : null
-                 }
-            });
+        if (userAlreadyExists) {
+            return sendErrorResponse(res, 400, 'User already exists with this email!','/auth/register');
         }
+        const userData = {uid, fullName, gender, email, phoneNumber, dateJoined}
+        cache.put('userData', userData);
+        sendVerificationCode(email);
+
+        return res.status(200).json({
+            result: { 
+                success : true,
+                error : false,
+                message : 'Please verify your email!',
+                redirectPage : '/auth/verify'
+                }
+        });
+    }catch(error){
+        return sendErrorResponse(res, 500, 'Internal error try again!','/auth/register');
+        console.log(error);
+    }
 }
 
-const checkRegInfo = async (userData) => {
-    const { firstName, lastName, email, password, passwordRepeat } = userData;
+const sendVerificationCode = async (email) =>{
+    const randomCode  = crypto.randomInt(9999);
+    waiting = true;
+    cache.put('verificationCode',randomCode,120000);
+    sendCodeToEmail(email,randomCode, () =>{
+        waiting = false;
+        console.log("Sending code timeout!");
+    });
+}
 
-        const inputErrors = [0, 0, 0, 0, 0];
 
-        const nameRegex = /^[A-Za-z\s]+$/;
-        const passRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()])(?=.*\d).{6,}$/;
-    
-        inputErrors[0] = nameRegex.test(firstName) ? 1 : 0;
-        inputErrors[1] = nameRegex.test(lastName) ? 1 : 0;
-        inputErrors[3] = passRegex.test(password) ? 1 : 0;
-        inputErrors[4] = passwordRepeat === password ? 1 : 0;
-    
-        return inputErrors;    
+
+const verify_post = async (req, res)  => {
+    if (!req?.body?.verificationCode) {
+        return sendErrorResponse(res, 400, 'No verification code!', '/auth/verify');
+    }
+
+    if (!waiting) {
+        return sendErrorResponse(res, 408, 'Could not verify try again!', '/auth/register');
+    }
+    const verificationCode = req.body.verificationCode;
+    const sentCode = cache.get('verificationCode');
+
+    if (sentCode != verificationCode) {
+        return sendErrorResponse(res, 401, 'Code is Invalid!', '/auth/register');
+    }
+
+    try {
+        const userData = cache.get('userData');
+        const {uid, fullName, gender, email, phoneNumber, dateJoined} = userData;
+        const result = await createUser(uid, fullName, gender, email, phoneNumber, dateJoined);
+        if (result.affsectedRows > 0) {
+            return res.status(200).json({
+                result: { 
+                    success : true,
+                    error : false,
+                    message : 'Registration successful!',
+                    redirectPage : '/auth/login'
+                    }
+            });
+        }   
+    } catch (error) {
+        return sendErrorResponse(res, 500, 'Internal error please try agin later.', '/error/server');
+    }
 }
 
 const register_get = (req, res) =>{
-    res.status(200).json({
+    return res.status(200).json({
         result:{
             success : true,
             message : 'Page loaded',
@@ -81,7 +100,19 @@ const register_get = (req, res) =>{
     });
 }
 
+function sendErrorResponse(res, status, message, redirectPage) {
+    res.status(status).json({
+        result: {
+            success: false,
+            error: true,
+            message: message,
+            redirectPage: redirectPage
+        }
+    });
+}
+
 module.exports = {
-    register_post,
-    register_get,
+    createUser_post,
+    verify_post,
+    register_get
 }
