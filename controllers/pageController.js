@@ -1,6 +1,4 @@
 const { verifyToken } = require('../utils/token');
-// const dotenv = require('dotenv');
-// dotenv.config({path : './.env'});
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const get_home = async (req, res) => {        

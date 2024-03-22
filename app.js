@@ -3,11 +3,11 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
-const { logger } = require('./middlewares/auth/logEvents');
-const errorHandler = require('./middlewares/auth/errorHandler');
-const verifyJWT = require('./middlewares/auth/verifyJWT');
+const { logger } = require('./middlewares/logEvents');
+const errorHandler = require('./middlewares/errorHandler');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/auth/credentials');
+const verifyAccessToken = require('./middlewares/auth/verifyAccessToken');
 const PORT = process.env.PORT || 4000;
 
 // custom middleware logger
@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use('/', require('./routes/auth/root'));
 app.use('/auth', require('./routes/auth/authRoute'));
 
-app.use(verifyJWT);
+app.use(verifyAccessToken);
 
 app.all('*', (req, res) => {
     res.status(404);

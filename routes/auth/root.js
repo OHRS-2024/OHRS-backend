@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('^/$|/index(.html)?', (req, res) => {
-    res.send('There is also a...');
+router.get('/', (req, res) => {
+    res.status(200).send('Welcome');
 });
 
 module.exports = router;

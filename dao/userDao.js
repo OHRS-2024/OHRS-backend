@@ -77,10 +77,21 @@ const deleteUser = async (email) =>{
     }
 }
 
+const createRefreshToken = async (userId, refreshToken, expiryDate) =>{
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.execute('INSERT INTO refresh_tokens(user_id, refresh_token, expiry_date)VALUES(?,?,?);', [userId, refreshToken, expiryDate]);
+        connection.release();
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+}
+
 const setRefreshToken = async (tokenId,refreshToken) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('UPDATE users_auth SET refresh_token TO ? WHERE user_id = ?;', [refreshToken, tokenId]);
+        const [rows] = await connection.execute('UPDATE users_auth SET refresh_token TO ? WHERE id = ?;', [refreshToken, tokenId]);
         connection.release();
 
         return rows[0];
@@ -94,20 +105,27 @@ const getRefreshToken = async (userId) =>{
     try {
         const [rows] = await connection.execute('SELECT * FROM refresh_tokens WHERE user_id = ?;', [userId]);
         connection.release();
-        return rows[0];
+        return rows;
     } catch (err) {
         throw err;
     }
 }
+
+// const main = async () =>{
+//     const foundToken = await getRefreshToken('87ffd962-e836-43b6-bf8f-cdb68b6e89c3');
+//     console.log(foundToken);
+// }
+
+// main();
 
 const getRefreshTokenByEmail = async (email) =>{
 
     const connection = await pool.getConnection();
     try {
         const [[userId]] = await connection.execute('SELECT user_id FROM users WHERE email = ?;', [email]);
-        const [rows] = await connection.execute('SELECT * FROM users INNER JOIN user_auth ON users.user_id = user_auth.user_id WHERE user_auth.user_id = ?',[userId.user_id]);
+        const [rows] = await connection.execute('SELECT * FROM refresh_tokens WHERE user_id = ?;',[userId.user_id]);
         connection.release();
-        return rows[0];
+        return rows;
     } catch (err) {
         throw err;
     }
@@ -158,5 +176,6 @@ module.exports = {
     deleteRefreshToken,
     getRefreshTokenByEmail,
     userExists,
-    checkRefreshToken
+    checkRefreshToken,
+    createRefreshToken
 };
