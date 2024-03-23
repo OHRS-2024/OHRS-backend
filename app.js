@@ -7,7 +7,7 @@ const { logger } = require('./middlewares/logEvents');
 const errorHandler = require('./middlewares/errorHandler');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/auth/credentials');
-const verifyAccessToken = require('./middlewares/auth/verifyAccessToken');
+const {verifyUserSession} = require('./middlewares/auth/verifyUserSession');
 const PORT = process.env.PORT || 4000;
 
 // custom middleware logger
@@ -28,12 +28,13 @@ app.use(express.json());
 
 //middleware for cookies
 app.use(cookieParser());
-
 // routes
-app.use('/', require('./routes/auth/root'));
-app.use('/auth', require('./routes/auth/authRoute'));
+app.use('/', require('./routes/root'));
+app.use('/auth', require('./routes/authRoute'));
 
-app.use(verifyAccessToken);
+app.use(verifyUserSession);
+
+app.use('/account', require('./routes/account'));
 
 app.all('*', (req, res) => {
     res.status(404);

@@ -1,33 +1,46 @@
-const {userExists, createUser} = require('../../dao/userDao');
+const { createUser, createUserAuth, getUserByEmail} = require('../../dataAccessModule/userData');
+const { createVerificationKey } = require('../../dataAccessModule/verificationData');
+const sendErrorResponse = require('../../utils/sendErrorResponse');
 const sendCodeToEmail = require('./Emailer');
 const crypto = require('crypto');
-const cache  = require('memory-cache');
+const bcrypt = require('bcrypt');
 
-let waiting = false;
-
-const createUser_post = async (req, res) => {
-        
+const register_post = async (req, res) => {
     try{
         if (!req?.body?.firstName ||
             !req?.body?.lastName ||
             !req?.body?.gender ||
             !req?.body?.email ||
-            !req?.body?.phoneNumber) {
+            !req?.body?.phoneNumber ||
+            !req?.body?.password) {
             return sendErrorResponse(res, 400, 'Please provide the required information!','/auth/register');             
         }
 
-        const { firstName, lastName, gender, email, phoneNumber } = req?.body;
-        const uid = crypto.randomUUID();
+        const { firstName, lastName, gender, email, password, phoneNumber } = req?.body;
+        const userId = crypto.randomUUID();
         const dateJoined = new Date().toISOString();
         const fullName = firstName +" "+ lastName;
-        const userAlreadyExists = await userExists(email);
+        const users = await getUserByEmail(email);
 
-        if (userAlreadyExists) {
+        if (users) {
             return sendErrorResponse(res, 400, 'User already exists with this email!','/auth/register');
         }
-        const userData = {uid, fullName, gender, email, phoneNumber, dateJoined}
-        cache.put('userData', userData);
-        sendVerificationCode(email);
+        const userRegRes = await createUser(userId, fullName, gender, email, phoneNumber, dateJoined);
+        bcrypt.hash(password, 8, async (err, hash) => {
+            const auth_string = hash;
+            const userAuthRes = await createUserAuth(userId, auth_string, 1000);
+            if(userRegRes.affectedRows < 1 || userAuthRes.affectedRows < 1){
+                return sendErrorResponse(res, 500, 'Registration failed try agin later!','/auth/register');             
+            }
+        });
+
+        const randomCode  = crypto.randomInt(999999);
+        await sendVerificationCode(email, randomCode);
+        await createVerificationKey(
+            userId,
+            randomCode,
+            ""+new Date().getTime(),
+            ""+(new Date().getTime() + 60000 * 5));
 
         return res.status(200).json({
             result: { 
@@ -35,57 +48,21 @@ const createUser_post = async (req, res) => {
                 error : false,
                 message : 'Please verify your email!',
                 redirectPage : '/auth/verify'
-                }
+            }
         });
+
     }catch(error){
-        return sendErrorResponse(res, 500, 'Internal error try again!','/auth/register');
         console.log(error);
+        return sendErrorResponse (res, 500, 'Internal error try again!','/auth/register');
     }
 }
 
-const sendVerificationCode = async (email) =>{
-    const randomCode  = crypto.randomInt(9999);
-    waiting = true;
-    cache.put('verificationCode',randomCode,120000);
-    sendCodeToEmail(email,randomCode, () =>{
-        waiting = false;
-        console.log("Sending code timeout!");
-    });
-}
-
-
-
-const verify_post = async (req, res)  => {
-    if (!req?.body?.verificationCode) {
-        return sendErrorResponse(res, 400, 'No verification code!', '/auth/verify');
-    }
-
-    if (!waiting) {
-        return sendErrorResponse(res, 408, 'Could not verify try again!', '/auth/register');
-    }
-    const verificationCode = req.body.verificationCode;
-    const sentCode = cache.get('verificationCode');
-
-    if (sentCode != verificationCode) {
-        return sendErrorResponse(res, 401, 'Code is Invalid!', '/auth/register');
-    }
-
+const sendVerificationCode = async (email, randomCode) =>{
     try {
-        const userData = cache.get('userData');
-        const {uid, fullName, gender, email, phoneNumber, dateJoined} = userData;
-        const result = await createUser(uid, fullName, gender, email, phoneNumber, dateJoined);
-        if (result.affsectedRows > 0) {
-            return res.status(200).json({
-                result: { 
-                    success : true,
-                    error : false,
-                    message : 'Registration successful!',
-                    redirectPage : '/auth/login'
-                    }
-            });
-        }   
+        sendCodeToEmail(email,randomCode, () =>{
+        });
     } catch (error) {
-        return sendErrorResponse(res, 500, 'Internal error please try agin later.', '/error/server');
+        console.log(error);
     }
 }
 
@@ -100,19 +77,7 @@ const register_get = (req, res) =>{
     });
 }
 
-function sendErrorResponse(res, status, message, redirectPage) {
-    res.status(status).json({
-        result: {
-            success: false,
-            error: true,
-            message: message,
-            redirectPage: redirectPage
-        }
-    });
-}
-
 module.exports = {
-    createUser_post,
-    verify_post,
+    register_post,
     register_get
 }

@@ -5,4 +5,3 @@ const accountStatus = {
 };
 
 module.exports = accountStatus;
-

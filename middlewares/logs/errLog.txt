@@ -1,1 +1,2 @@
 
+2024-03-22	20:34:06	ce8fafd9-5354-44a6-b88a-4800aabbce59	Error: Not allowed by CORS

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const userDao = require('../../dao/userDao');
+const userDao = require('../../dataAccessModule/userData');
 
 const handleRefreshToken = async (req, res) => {
     try {
