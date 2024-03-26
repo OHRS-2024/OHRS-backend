@@ -11,3 +11,5 @@ const getDate = () =>{
     let formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     return formattedDateTime;    
 }
+
+module.exports = getDate;

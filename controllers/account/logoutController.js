@@ -1,25 +1,19 @@
 const { getUserSession, deleteUserSession } = require('../../dataAccessModule/sessionData');
-const jwt = require('jsonwebtoken');
 
 const logout_get = async (req, res) => {
     
     const cookies = req.cookies;
-    if (!cookies?.accessToken && !req?.userId) return res.sendStatus(204); //No content
+    if (!cookies?.session_id && !req?.userId) return res.sendStatus(204); //No content
     
-    const cookieAccessToken = cookies.accessToken;
-    const userId  = req?.userId;
+    const cookieSessionId = cookies.session_id;
 
-    // Is accessToken in db?
-    const sessions = await getUserSession(userId);
+    const result = await deleteUserSession(cookieSessionId);
 
-    if (sessions?.length < 1) {
-        res.clearCookie('accessToken', { httpOnly: true, sameSite: 'None', secure: true });
-        return res.sendStatus(204);
+    if (result.affectedRows < 1) {
+        return sendErrorResponse(res, 409, "Unable to logout!", "/auth/login");
     }
-
-    const foundToken = sessions.find(session => session.token === cookieAccessToken);
-    const result = await deleteUserSession(foundToken.session_id);
-    res.clearCookie('accessToken', { httpOnly: true, sameSite: 'None', secure: true });
+    
+    res.clearCookie('session_id', { httpOnly: true, sameSite: 'None', secure: true });
     res.status(200).json({
             result: {
                 success: true,

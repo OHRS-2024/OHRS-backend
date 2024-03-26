@@ -1,10 +1,10 @@
 require('dotenv').config();
 const pool = require('../config/db');
 
-const createUserSession = async (userId, token, createdAt, expiresAt) =>{
+const createUserSession = async (sessionId,userId,userRole,userAgent,origin,createdAt,expiresAt) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('INSERT INTO sessions(user_id, token, created_at, expires_at)VALUES(?,?,?,?);', [userId, token, createdAt, expiresAt]);
+        const [rows] = await connection.execute('INSERT INTO sessions(session_id,user_id,user_role,user_agent,user_ip,created_at,expires_at)VALUES(?,?,?,?,?,?,?);', [sessionId,userId,userRole,userAgent,origin,createdAt,expiresAt]);
         connection.release();
         return rows;
     } catch (err) {
@@ -12,10 +12,10 @@ const createUserSession = async (userId, token, createdAt, expiresAt) =>{
     }
 }
 
-const getUserSession = async (userId) =>{
+const getUserSession = async (sessionId) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('SELECT * FROM sessions WHERE user_id = ?;', [userId]);
+        const [rows] = await connection.execute('SELECT * FROM sessions WHERE session_id = ?;', [sessionId]);
         connection.release();
         return rows;
     } catch (err) {

@@ -63,13 +63,23 @@ const getUserByEmail = async (email) =>{
     }
 }
 
-const updateUser = async (email, attrName, attrVal) =>{
+const getPageUser = async (page) =>{
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.execute('SELECT * FROM users INNER JOIN user_auth ON users.user_id = user_auth.user_id;');
+        connection.release();
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+}
+
+const updateUser = async (userId, attrName, attrVal) =>{
 
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('UPDATE users SET ? = ? WHERE email = ?;', [attrName, attrVal, email]);
+        const [rows] = await connection.execute('UPDATE users SET ? = ? WHERE user_id = ?;', [attrName, attrVal, userId]);
         connection.release();
-
         return rows;
     } catch (err) {
         throw err;
@@ -98,12 +108,22 @@ const getUserStatus = async (userId) =>{
     }
 }
 
-const deleteUser = async (email) =>{
+const getUserInfo = async (userId) =>{
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.execute('DELETE FROM users WHERE email = ?;', [email]);
+        const [rows] = await connection.execute('SELECT * FROM users WHERE user_id = ?;', [userId]);
         connection.release();
+        return rows[0];
+    } catch (err) {
+        throw err;
+    }
+}
 
+const deleteUser = async (userId) =>{
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.execute('DELETE FROM users WHERE user_id = ?;', [userId]);
+        connection.release();
         return rows;
     } catch (err) {
         throw err;
@@ -117,7 +137,9 @@ module.exports = {
     getUserStatus,
     getUser,
     getUserByEmail,
+    getPageUser,
     registerUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUserInfo
 };
