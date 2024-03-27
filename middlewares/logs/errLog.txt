@@ -1,2 +1,27 @@
 
 2024-03-22	20:34:06	ce8fafd9-5354-44a6-b88a-4800aabbce59	Error: Not allowed by CORS
+2024-03-25	13:52:28	7f7ce370-f207-4df4-8bfa-adacaf12ca20	TypeError: req.userRole.map is not a function
+2024-03-25	13:53:44	67846f62-4dc7-41e8-b3f6-f66d660cde9e	TypeError: req.userRole.map is not a function
+2024-03-26	12:12:59	4e09e3e3-11cf-40f2-8c08-4a489cddf141	TypeError: The "options" argument must be of type object. Received type number (128)
+2024-03-26	12:27:24	9c46467e-e46a-4cbd-ae99-d81250eca3b9	TypeError: The "options" argument must be of type object. Received type number (NaN)
+2024-03-26	12:27:43	7b24f6ea-9281-42bc-820a-02ab6fb3c3fc	TypeError: The "options" argument must be of type object. Received type string ('asdasd')
+2024-03-26	15:42:09	dff91c09-b9c8-4b46-a357-fe844f00c989	TypeError: Cannot read properties of undefined (reading 'filename')
+2024-03-26	15:50:26	ebf93477-d234-45da-bbd3-8ebf7ea6c38f	TypeError: Cannot read properties of undefined (reading '0')
+2024-03-26	15:50:34	68a3dd30-b244-450d-b91c-f811e7ce6958	TypeError: Cannot read properties of undefined (reading 'length')
+2024-03-26	15:51:05	3d4497c7-0761-4a35-ad94-073b20428337	TypeError: Cannot read properties of undefined (reading 'filename')
+2024-03-26	16:00:13	43f23454-4ac5-4a33-bcc1-5b4fc11f535a	TypeError: path must be absolute or specify root to res.sendFile
+2024-03-26	16:00:35	32a7ec47-2b8c-40d9-bf08-656ab8594060	TypeError: path must be absolute or specify root to res.sendFile
+2024-03-26	16:01:03	2a4b942a-fb24-43fc-bfd5-40e402a573c3	ForbiddenError: Forbidden
+2024-03-26	16:02:43	6d3e2960-67cc-49a3-9bc6-16df68b91fa1	Error: Not allowed by CORS
+2024-03-26	16:04:41	9272a8c9-f573-40b7-8da2-6bda71687b92	Error: Not allowed by CORS
+2024-03-26	16:25:58	3cad9988-4df9-42ed-af4c-b2a481664a83	Error: Not allowed by CORS
+2024-03-26	16:37:04	f5de7002-688b-485c-a5e9-2d8585ed6595	TypeError: Cannot read properties of undefined (reading 'forEach')
+2024-03-26	16:37:17	fd2a8a18-d738-44b4-a03c-6d727377e8c2	TypeError: Cannot read properties of undefined (reading 'forEach')
+2024-03-26	16:39:00	9467f93b-55c1-4d26-9b6a-33fe8581fc26	TypeError: Cannot read properties of undefined (reading 'forEach')
+2024-03-26	16:53:20	2ef019f7-d774-4f99-a13f-668fbff45206	Error: ENOENT: no such file or directory, stat '/home/eyuel/Documents/WEB/OHRS/ohrs-backend/routes/uploads/files-1711461051780.MOV'
+2024-03-26	20:14:21	15643018-e6f9-41d3-b841-cd832d0b34a5	TypeError: Cannot read properties of undefined (reading 'length')
+2024-03-26	20:33:47	c561fe0e-d2e2-45e9-b2ee-e6d64131aaf0	TypeError: Cannot read properties of undefined (reading 'length')
+2024-03-26	20:56:25	a5453b9c-54d2-41f5-b62d-3bcee441350c	TypeError: Cannot read properties of undefined (reading 'length')
+2024-03-26	20:56:52	5eaaa899-c77e-4843-9257-ab5e48f7b715	TypeError: Cannot read properties of undefined (reading 'length')
+2024-03-26	20:57:03	e18a4695-bdd3-4977-83a4-7de023d29a84	PayloadTooLargeError: request entity too large
+2024-03-26	23:07:53	ef833dd3-3509-456e-afa7-1c0fe6bb28c9	Error: Not allowed by CORS

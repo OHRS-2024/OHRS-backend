@@ -28,12 +28,17 @@ app.use(express.json());
 
 //middleware for cookies
 app.use(cookieParser());
-// routes
+
+// routes   
 app.use('/', require('./routes/root'));
-app.use('/auth', require('./routes/authRoute'));
+app.use('/auth', require('./routes/auth'));
+app.use('/listing', require('./routes/listing'));
 
 app.use(verifyUserSession);
-
+app.use('/property', require('./routes/property'));
+app.use('/user',require('./routes/user'))
+// app.use('/reservation', require('./routes/reservation'));
+// app.use('/payment', require('./routes/payment'));
 app.use('/account', require('./routes/account'));
 
 app.all('*', (req, res) => {

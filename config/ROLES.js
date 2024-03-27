@@ -1,6 +1,6 @@
 const ROLES = {
     "ADMIN": 3000,
-    "HOST": 2000,
+    "LANDLORD": 2000,
     "TENANT": 1000
 }
 

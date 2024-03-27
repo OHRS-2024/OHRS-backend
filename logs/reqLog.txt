@@ -1,2 +1,0 @@
-2024-03-22	17:00:34	a3af0853-60ed-4001-a7b5-b594825c1bfc	GET	undefined	/auth/refresh
-2024-03-22	17:03:47	84e4c825-46ae-4a39-9696-a160f8623639	GET	undefined	/auth/

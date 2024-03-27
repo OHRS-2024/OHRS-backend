@@ -2,6 +2,7 @@ const { createUser, createUserAuth, getUserByEmail} = require('../../dataAccessM
 const { createVerificationKey } = require('../../dataAccessModule/verificationData');
 const sendErrorResponse = require('../../utils/sendErrorResponse');
 const sendCodeToEmail = require('./Emailer');
+const getDate = require('../../utils/date');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
@@ -18,7 +19,7 @@ const register_post = async (req, res) => {
 
         const { firstName, lastName, gender, email, password, phoneNumber } = req?.body;
         const userId = crypto.randomUUID();
-        const dateJoined = new Date().toISOString();
+        const dateJoined = getDate();
         const fullName = firstName +" "+ lastName;
         const users = await getUserByEmail(email);
 
